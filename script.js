@@ -2,10 +2,10 @@
 //encodeURIComponent()
 console.log("this is a test of the javascript connection");
 
-var button1 = document.querySelector("#button1");
+var add_button = document.querySelector("#button1");
 
 
-button1.onclick = function(){
+add_button.onclick = function(){
     var VideoGameRating = document.querySelector("#Rating");
     var VideoGameName = document.querySelector("#GameName");
     var VideoGameReviewAuthor = document.querySelector("#Author");
@@ -19,33 +19,107 @@ button1.onclick = function(){
     createVideoGamesFromServer(VideoGameName.value,VideoGameRating.value,VideoGameReview.value,VideoGameReviewAuthor.value,date.value);
 
 }
-/*
-
-*/
 
 
-var x = {};
-function loadUsersFromServer(){
-    fetch("https://gamernationexpo.herokuapp.com/users").then(function(response) {
-        response.json().then(function(data_from_server) {
-            x = data_from_server;
-            var loginButton = document.querySelector("#button4");
 
-            loginButton.onclick = function(){
-            var email = document.querySelector("#email");
-            var password = document.querySelector("#password");
-            var firstname = document.querySelector("#firstName");
-            var lastname = document.querySelector("#lastName");
+
+
+
+function authenticateUsersFromServer(email,password){
+
+    var data = "&email=" + encodeURIComponent(email);
+    data += "&password=" + encodeURIComponent(password);
+    
+    fetch("https://gamernationexpo.herokuapp.com/sessions",{
+        method: "POST",
+        credentials: 'include',
+        body: data,
+        headers: {
+            //headers here
+            "Content-Type" : "application/x-www-form-urlencoded"
+        }
+    }).then(function(response) {
+        if(response.status == 401){
+            alert("Invalid email or password, Please try again");
+        }
+        else if(response.status == 201){
+            alert("Sucessful Login");
+        
+        
             
-            }
-        });
+        login_div.style.display = "none";
+        page_display = document.querySelector("#new");
+        page_display.style.display = "grid";
+            
+        loadVideoGamesFromServer();
+
+            
+            
+            
+        }  
     });
 }
+
 function loadVideoGamesFromServer(){
-    fetch("https://gamernationexpo.herokuapp.com/videogames").then(function(response) {
+    fetch("https://gamernationexpo.herokuapp.com/videogames",{
+        credentials: 'include'
+    }).then(function(response) {
+        if (response.status == 401){
+            //show login/register dispatchEvent
+            //hide resource list/divs
+
+            register_div = document.querySelector("#register");
+            login_div = document.querySelector("#login");
+
+            backButton = document.querySelector("#backButton");
+
+            register = document.querySelector("#button5");
+
+            backButton.onclick = function(){
+                register_div.style.display = "none";
+                login_div.style.display = "grid";
+
+            }
+            get_to_register_page = document.querySelector("#button3");
+            //button used to get to the register page
+            get_to_register_page.onclick = function(){
+                register_div.style.display = "grid";
+                login_div.style.display = "none";
+
+            }
+            register.onclick = function(){
+
+    
+                var email = document.querySelector("#register_email");
+                var password = document.querySelector("#register_password");
+                var firstname = document.querySelector("#firstName");
+                var lastname = document.querySelector("#lastName");
+
+                createUserFromServer(firstname.value,lastname.value,email.value,password.value);
+                register_div.style.display = "none";
+                login_div.style.display = "grid";
+    
+            }
+            var loginButton = document.querySelector("#button4");
+            loginButton.onclick = function(){
+
+                var email = document.querySelector("#login_email");
+                var password = document.querySelector("#login_password");
+
+                authenticateUsersFromServer(email.value,password.value);
+                
+
+            } 
+            //return
+        }else if(response.status == 200){
+
         response.json().then(function(data_from_server) {
             x = data_from_server;
             //TODO: use a loop to display all of the data into DOM
+            cookie_login_div = document.querySelector("#login");
+            cookie_page_display = document.querySelector("#new");
+            cookie_login_div.style.display = "none";
+            cookie_page_display.style.display = "grid";
             var unorderedList = document.querySelector("ul");
             unorderedList.innerHTML = "";
             data_from_server.forEach(function (game) {
@@ -142,13 +216,17 @@ function loadVideoGamesFromServer(){
                 
 
                 editButton.innerHTML = "EDIT";
-                unorderedListItem.appendChild(editButton)
+                unorderedListItem.appendChild(editButton);
 
                 //insert data into a new DOM element
             });
         });
-    });
+    }
+});
+
 }
+
+
 function updateVideoGameFromServer(videogame_id,name,rating,description,author,date){
     var data = "name=" + encodeURIComponent(name);
     data += "&rating=" + encodeURIComponent(rating);
@@ -156,22 +234,25 @@ function updateVideoGameFromServer(videogame_id,name,rating,description,author,d
     data += "&author=" + encodeURIComponent(author);
     data += "&date=" + encodeURIComponent(date);
 
-    fetch(`https://gamernationexpo.herokuapp.com/videogames/${videogame_id}`,{
+    fetch(`https://gamernationexpo.herokuapp.com/${videogame_id}`,{
         method: 'PUT',
         body: data,
+        credentials: 'include',
         headers:{
             "Content-Type" : "application/x-www-form-urlencoded"
         } 
     }).then(function(response){
-        loadVideoGamesFromServer()
+        loadVideoGamesFromServer();
     });
 }
+
 function deleteVideoGameFromServer(videogame_id){
     fetch(`https://gamernationexpo.herokuapp.com/videogames/${videogame_id}`,{
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
 
     }).then(function(response){
-        loadVideoGamesFromServer()
+        loadVideoGamesFromServer();
     });
 
 }
@@ -187,6 +268,7 @@ function createVideoGamesFromServer(vidGameName,vidGameRating,vidGameReview,vidG
         //method header(s) body
         method: "POST",
         body: data,
+        credentials: 'include',
         headers: {
             //headers here
             "Content-Type" : "application/x-www-form-urlencoded"
@@ -195,7 +277,7 @@ function createVideoGamesFromServer(vidGameName,vidGameRating,vidGameReview,vidG
 
     }).then(function(response){
         //response code gos here
-        loadVideoGamesFromServer()
+        loadVideoGamesFromServer();
         //TODO: refresh the data by calling loadVideoGamesFromServer
 
     });
@@ -211,14 +293,23 @@ function createUserFromServer(firstName,lastName,email,password){
     fetch("https://gamernationexpo.herokuapp.com/users",{
         method: "POST",
         body: data,
+        credentials: 'include',
         headers: {
             //headers here
             "Content-Type" : "application/x-www-form-urlencoded"
         }
         
     }).then(function(response){
+        if(response.status == 422){
+            alert("Email already been used");
+        }else if(response.status == 201){
             //TODO: figure out what to put here
-            loadUsersFromServer()
+            alert("Account created Successfully, please Login");
+            register_div = document.querySelector("#register");
+            login_div = document.querySelector("#login");
+            register_div.style.display = "none";
+            login_div.style.display = "grid";
+        }
         });
 
 }
