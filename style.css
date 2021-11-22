@@ -163,6 +163,18 @@ input{
     grid-row-start: 2;
     grid-row-end: 3; 
 }
+#email1{
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 2;
+    grid-row-end: 3; 
+}
+#password1{
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 3;
+    grid-row-end: 4; 
+}
 #password{
     grid-column-start: 1;
     grid-column-end: 4;
@@ -182,7 +194,6 @@ input{
     grid-row-end: 5;
 }
 #button4{
-    height: 100px;
     width:auto;
 }
 #register{
