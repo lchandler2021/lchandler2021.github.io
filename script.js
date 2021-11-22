@@ -208,7 +208,7 @@ function createUserFromServer(firstName,lastName,email,password){
     data += "&email=" + encodeURIComponent(email);
     data += "&password=" + encodeURIComponent(password);
 
-    fetch("https://     /users",{
+    fetch("https://gamernationexpo.herokuapp.com/users",{
         method: "POST",
         body: data,
         headers: {
