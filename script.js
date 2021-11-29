@@ -103,8 +103,8 @@ function loadVideoGamesFromServer(){
             var loginButton = document.querySelector("#button4");
             loginButton.onclick = function(){
 
-                var email = document.querySelector("#login_email");
-                var password = document.querySelector("#login_password");
+                var email = document.querySelector("#email");
+                var password = document.querySelector("#password");
 
                 authenticateUsersFromServer(email.value,password.value);
                 
