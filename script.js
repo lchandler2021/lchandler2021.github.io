@@ -90,8 +90,8 @@ function loadVideoGamesFromServer(){
             register.onclick = function(){
 
     
-                var email = document.querySelector("#register_email");
-                var password = document.querySelector("#register_password");
+                var email = document.querySelector("#email1");
+                var password = document.querySelector("#password1");
                 var firstname = document.querySelector("#firstName");
                 var lastname = document.querySelector("#lastName");
 
